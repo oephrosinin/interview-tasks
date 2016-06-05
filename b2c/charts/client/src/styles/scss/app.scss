@@ -1,0 +1,21 @@
+.frequency {
+	margin: 0 auto;
+	width: 1000px;
+	max-width: 100%;
+
+	.diagrams canvas {
+		height: 300px;
+	}
+
+	form {
+		background-color: rgba(0, 0, 0, .05);
+		width: 100%;
+		max-width: 300px;
+		position: relative;
+		padding: 10px;
+
+		.block {
+			margin: 10px 0;
+		}
+	}
+}

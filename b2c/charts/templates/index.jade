@@ -1,0 +1,19 @@
+extends layout
+
+block content
+	h1 Frequency
+	.diagrams
+		h3 diagrams block
+		form.number
+			.block
+				label Number of diagrams:
+			.block
+				select.form-control
+					option(value=1 selected=true) Single
+					- for (var x = 2; x < 20; x++)
+						option(value=x)=x
+			.block
+				.submit
+					input(type='submit' class='btn btn-success')
+		#diagrams
+			canvas#diagram.item

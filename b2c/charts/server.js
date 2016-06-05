@@ -1,46 +1,33 @@
 var express = require('express');
+var path = require('path');
 var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
 
-var CONFIG = {
-	POINTS: {
-		QTY: 100,					// number of points
-		MIN: -100,					// minimum value of a point
-		MAX: 100,					// maximum value of a point
-		UPDATE_INTERVAL: 20			// interval between points update (ms)
-	}
-};
+var CONFIG = require('./config');
+var Points = require('./server/points');
 
-var points;
+io.on('connection', Points.connect.bind(this, io));
 
-function getRandom(min, max) {
-	return Math.round(Math.random() * (max - min) + min);
-}
+// view engine setup
+app.set('views', path.join(__dirname, 'templates'));
+app.set('view engine', 'jade');
 
-function initPoints() {
-	points = [];
-	for (var pointIndex = 0; pointIndex < CONFIG.POINTS.QTY; pointIndex++) {
-		points[pointIndex] = getRandom(CONFIG.POINTS.MIN, CONFIG.POINTS.MAX);
-	}
-}
+app.use(express.static(path.join(__dirname, '/client/public')));
 
-function updatePoints() {
-	points.shift();
-	points.push(getRandom(CONFIG.POINTS.MIN, CONFIG.POINTS.MAX));
-}
-
-initPoints();
-setInterval(updatePoints, CONFIG.POINTS.UPDATE_INTERVAL);
-
-app.use(express.static('public'));
-
-app.get('/api/v1/config', function (req, res) {
+app.get('/api/v1/config', (req, res) => {
 	res.json(CONFIG);
 });
 
-app.get('/api/v1/points', function (req, res) {
-	res.json(points);
+app.get('/api/v1/points', Points.get);
+app.get('/api/v1/points/:n', Points.getByNumber);
+app.get('/api/v1/init/single', Points._initPoints);
+app.get('/api/v1/init/several/:n', Points.initSeveral);
+
+app.get('/', (req, res) => {
+	res.render('index');
 });
 
-app.listen(3000, function () {
+server.listen(3000, () => {
 	console.log('listening on port 3000');
 });
