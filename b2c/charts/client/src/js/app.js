@@ -30,8 +30,10 @@ $( document ).ready(() => {
 
   // Emitted when several diagram points was inited
   socket.on('diagrams', (data) => {
-    diagramsAmount = data.length;
-    $('select').val(diagramsAmount);
+    if (diagramsAmount == 1) {
+      diagramsAmount = data.length;
+      $('select').val(diagramsAmount);
+    }
 
     // if pending is going do nothing
     if (!pending) {
@@ -60,8 +62,8 @@ function initSingle() {
   // set amount diagrams to 1
   diagramsAmount = 1;
 
-  if ($('#diagrams .item').length > 1) {
-    removeExternalDiagrams(1);
+  if ($('#diagrams .item').length > 1 || diagrams.length) {
+    removeExternalDiagrams(1, true);
   }
 
   Functions.sendRequest("/api/v1/init/single", false, {method: "GET"})
@@ -95,7 +97,7 @@ function checkDiagramBlocks(number) {
   let diagramsSet = $('#diagrams .item');
 
   if (diagramsSet.length > number) {
-    removeExternalDiagrams(number, diagramsSet);
+    removeExternalDiagrams(number);
   } else {
     for (let i = diagramsSet.length; i < number; i++) {
       $('#diagrams .item').last().after(`<canvas id="diagram${i}" class="item"></canvas>`);
@@ -107,11 +109,18 @@ function checkDiagramBlocks(number) {
 /**
  * Remove diagrams which we do not need more
  * @param number
- * @param block
+ * @param single
  */
-function removeExternalDiagrams(number, block = $('#diagrams .item')) {
+function removeExternalDiagrams(number, single = false) {
 
-  block.each((index, elem) => {
+  // Destroy first element if hare is single diagram
+  if (single) {
+    if (diagrams.length && "destroy" in diagrams[0]) {
+      diagrams[0].destroy();
+    }
+  }
+
+  $('#diagrams .item').each((index, elem) => {
     if (index > number - 1) {
       // If diagram already exists, destroy it
       tryDestroyExisted(diagrams[index]);
@@ -251,6 +260,6 @@ function getDiagramParams(points) {
         pointHoverBorderWidth: 2,
         pointRadius: 1,
         pointHitRadius: 10,
-        lineTension: 0.1,
+        lineTension: 0.1
       }]}}
 }
