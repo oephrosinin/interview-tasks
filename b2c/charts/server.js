@@ -21,7 +21,7 @@ app.get('/api/v1/config', (req, res) => {
 
 app.get('/api/v1/points', Points.get);
 app.get('/api/v1/points/:n', Points.getByNumber);
-app.get('/api/v1/init/single', Points._initPoints);
+app.get('/api/v1/init/single', Points.initPoints);
 app.get('/api/v1/init/several/:n', Points.initSeveral);
 
 app.get('/', (req, res) => {
