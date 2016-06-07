@@ -24,7 +24,7 @@ let Points = {
 	 */
 	get(req, res) {
 		if (!Points.points.length) {
-			Points._initPoints();
+			Points.initPoints();
 		}
 		res.json({points: Points.points});
 	},
@@ -80,7 +80,7 @@ let Points = {
 		Points.socket = socket;
 
 		if (!Points.points.length) {
-			Points._initPoints();
+			Points.initPoints();
 		}
 
 		io.emit('coordinates', Points.points);
@@ -115,9 +115,10 @@ let Points = {
 
 	/**
 	 * Create points set
-	 * @private
+	 * @param req
+	 * @param res
 	 */
-	_initPoints(req = {}, res = {}) {
+	initPoints(req = {}, res = {}) {
 		Points.points = Points._getRandomPoints();
 
 		if (!Points.singleInterval) {
